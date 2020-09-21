@@ -5,25 +5,39 @@
 #include <string.h>
 #include <math.h>
 
+
 void gotoxy(int x, int y);
-int min, sus, i=0, j=0, n=0, comp, resul, sum, signo=0, *vecm, *vecs, minp, susp, n, m, *resulc, *vecsp, recom, *vecn, res, division, r, num, t;
+int min, sus, dif, i=0, j=0, n=0, comp, resul, sum, signo=0, vecTor[20],vecUno[20], vecm[20], vecs[20], vecc[20], vecr[20], r, t;
 char resp;
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /* 
+	Calcular Complementos v2
 
-Calcular Complementos
-
-Presentado por: 
-	Edwin González, 
-	Rolando Peña, 
-	Christian Pinzón 
-
+	Presentado por: 
+		Edwin González, 
+		Rolando Peña, 
+		Christian Pinzón 
+		
 */
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/* 
+	Cambios con respecto a versión original sustentada:
+		- Se cambiaron los "vectores dinámicos" hechos con punteros por vectores estáticos para mayor comodidad.
+		- Se eliminaron algunas variables sin usar.
+		- Se crearon algunos métodos y funciones adicionales para completar los requerimientos solicitados.
+		
+*/
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 // Metodo para posicionarse en pantalla
-void gotoxy(int x,int y)
-{ 
+void gotoxy(int x,int y){ 
  HANDLE hcon; 
  hcon = GetStdHandle(STD_OUTPUT_HANDLE); 
  COORD dwPos; 
@@ -54,28 +68,62 @@ void a10(){
 		i++;
 	}while(min>comp);
 	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Se encuentra la diferencia entre el sustraendo y la base 10 
 	sum=comp-sus;
+	
+	gotoxy(14, 4); printf("- ");
+	// Impresión de Minuendo
+	gotoxy(16, 2); printf("%d", comp);
+	// Impresión de Sustraendo
+	gotoxy(16, 4); printf("%d", sus);
+	gotoxy(12, 5); printf("--------");
+	gotoxy(16, 6); printf("%d", sum);
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	// Sumar el minuendo con el complemento obtenido
 	resul=sum+min;
+	 gotoxy(24, 4); printf("+ ");
+	// Impresión de Minuendo
+	gotoxy(28, 2); printf("%d", min);
+	// Impresión de Sustraendo
+	gotoxy(28, 4); printf("%d", sum);
+	gotoxy(22, 5); printf("--------");
+	gotoxy(28, 6); printf("%d", resul);
 	
-	// Si el resultado es mayor al resultado natural de la operacion, entonces
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Si el resultado tiene una unidad de orden superior, entonces
 	if(resul>comp){
 	// Se elimina la unidad de orden superior
 		resul=resul-comp;
+		gotoxy(34, 6); printf("--> %d", resul);
 	}
 	signo=0; // Valor ascii sin signo
 	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	// Si sustraendo es mayor al minuendo, entonces
 	if(sus>min){
-		// Se recomplementa (de ser necesario)
+		
+		gotoxy(46, 4); printf("-");
+		gotoxy(50, 4); printf("%d", resul);
+		
 		resul=comp-resul;
 		signo=45; // Valor ascii del signo negativo
+		
+		gotoxy(50, 2); printf("%d", comp);
+		gotoxy(44, 5); printf("--------");
+		gotoxy(50, 6); printf("%d", resul);
 	}
 	
-	// Se escribe el resultado en pantalla
-	gotoxy(20, 3); printf("Base a complementar: %d Complemento de sustraendo: %d", comp, sum);
 	gotoxy(2, 6); printf("%c %d", signo, resul);
+	gotoxy(60, 6); printf("--> %c %d", signo, resul);
+	
+	// Se escribe el resultado en pantalla
+	gotoxy(20, 20); printf("Base a complementar: %d Complemento de sustraendo: %d", comp, sum);
+	
 }
 
 // Metodo para calcular el complemento a 9
@@ -97,30 +145,80 @@ void a9(){
 		i++;
 	}while(min>comp);
 	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	// Calcular el complemento
 	sum=comp-sus;
+	
+	gotoxy(14, 4); printf("- ");
+	// Impresión de Minuendo
+	gotoxy(16, 2); printf("%d", comp);
+	// Impresión de Sustraendo
+	gotoxy(16, 4); printf("%d", sus);
+	gotoxy(12, 5); printf("--------");
+	gotoxy(16, 6); printf("%d", sum);
+	
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	// Sumar  el complemento obtenido al minuendo
 	resul=sum+min;
 	
+	gotoxy(24, 4); printf("+ ");
+	// Impresión de Minuendo
+	gotoxy(28, 2); printf("%d", min);
+	// Impresión de Sustraendo
+	gotoxy(28, 4); printf("%d", sum);
+	gotoxy(22, 5); printf("--------");
+	gotoxy(28, 6); printf("%d", resul);
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	// Si hay una unidad de orden superior se descarta del extremo izquierdo y se suma a las unidades del mismo resultado
 	if(resul>(comp+1)){
 		resul=(resul+1)-(comp+1);
+		gotoxy(34, 6); printf("--> %d", resul);
 	}
 	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	if(sus>min){
+		
+		gotoxy(46, 4); printf("-");
+		gotoxy(50, 4); printf("%d", resul);
+		
 		resul=comp-resul;
 		signo=45;
+		
+		gotoxy(50, 2); printf("%d", comp);
+		gotoxy(44, 5); printf("--------");
+		gotoxy(50, 6); printf("%d", resul);
+		
 	}
 	
 	// Se escribe el resultado en pantalla
-	gotoxy(20, 3); printf("Base a complementar: %d Complemento de sustraendo: %d", comp, sum);
+	gotoxy(20, 20); printf("Base a complementar: %d Complemento de sustraendo: %d", comp, sum);
 	gotoxy(2, 6); printf("%c %d", signo, resul);
 }
 
+// Metodo para inicializar los vectores que almace
+void vaciarVectores(){
+	int x;
+	for(x=0;x<20;x++)
+	{
+		vecm[x] = 0; 
+		vecs[x] = 0; 
+		vecc[x] = 0; 
+		vecr[x] = 0;
+		vecUno[x] = 0;
+	}
+	vecUno[0] = 1;
+}
+
 // Transformar numero a binario
-void bin(n){
+int bin(int n, int *vec){
 	
+	int tamano = 0;
 	if(n<0)
 	{
 		printf("Nota: tomare el valor como positivo.");
@@ -130,121 +228,499 @@ void bin(n){
 	// Obtener cada uno de los digitos del numero como binario 
 	do{
 		// Obtener un digito (calculando el residuo) y almacenarlo en el espacio de memoria vecm
-		vecm[m]=n%2;
+		*vec=n%2;
 		// Dividir el numero original a la mitad 
 		n=n/2;
 		// Moverse al siguiente espacio del "vector"
-		m++;
-		// Se incrementa el tamaño del "vector"
-		vecm=(int*) realloc(vecm, (m+1)*sizeof(int));
-	}while(n>=2);
+		tamano++;
+		vec++;
+	}while(n>=1);
 	
-	// "Redondear" en caso de recibir un decimal
-	vecm[m]=floor(n);
+	return tamano;
+}
+
+// Metodo para transformar un binario a decimal
+int decimal(int vec[], int tamano){
+	int x, decimal;
+	for(x=0;x<=tamano;x++){	
+		if(vec[x]==1)
+		{
+			decimal=decimal+pow(2,x);
+		}
+	}
+	return decimal;
+}
+
+// Metodo para sumar dos numeros binarios (puntero al vector del primer binario, el numero de digitos del primer binario, ... , ... , vector que recibe el resultado) 
+int sumaBin(int *bin1 , int tBin1, int *bin2, int tBin2, int *resultado){
 	
-	// "rellenar" espacios en blanco con 0 hasta obtener un byte 
-	if(m<7){
-		do{
-			m++;
-			vecm=(int*) realloc(vecm, (m+1)*sizeof(int));
-			vecm[m] = 0;
-		}while(m<7);
+	int lleva=0;
+	int masGrande, tamanoResultado=0;
+	int x;
+	if( tBin1<=tBin2)
+	{
+		masGrande= tBin2;
+	}else
+	{
+		masGrande = tBin1;
+	}
+	
+	for(x=0; x<masGrande+1; bin1++,bin2++,resultado++, x++)
+	{
+		switch(*bin1 + *bin2 + lleva)
+		{
+			case 0:
+				*resultado = 0;
+				lleva = 0;
+				break;
+			case 1:
+				*resultado = 1;
+				lleva = 0;
+				break;
+			case 2:
+				*resultado = 0;
+				lleva = 1;
+				break;
+			case 3:
+				*resultado = 1;
+				lleva = 1;
+				break;
+				
+			default:
+				printf("Algo anda mal :c");
+				break;	
+		}
+		tamanoResultado++;
+
 	}
 		
+	return tamanoResultado;
 }
 
 // Metodo para calcular el complemento a 1
 void a1(){
-	// Captura de datos (el numero entero al cual buscar su complemento a 1 como binario)
-	printf("Teclee el numero a complementar: ");
-	scanf("%d", &num);
-	m=0;
+	 
+	int sizeMin, sizeSus, sizeComp, sizeR, sizeComprobacion, size;
 	
-	// Obtener direccion de memoria donde esta el numero a complementar 
-	vecm=(int*) calloc(1, sizeof(int));
-	// Transformar el numero introducido en binario
-	bin(num);
-	// Obtener direccion de memora donde estara el complemento del numero a complementar
-	vecs = (int*) calloc((m+1), sizeof(int));
-	t=0;
+	// Captura de Datos
+	printf("Teclee la resta: ");
+	gotoxy(2, 4); printf("- ");
+	gotoxy(4, 2); scanf("%d", &min);
+	gotoxy(4, 4); scanf("%d", &sus);
+	gotoxy(2, 5); printf("--------");
+	dif=min-sus;
+	gotoxy(2, 6); printf("%d \n",dif );
+
+	vaciarVectores();
 	
+	// Se transforman los operandos en binario
+	sizeMin = bin(min, &vecm[0]);
+
+	sizeSus = bin(sus, &vecs[0]);
+	
+	if(sizeMin>=sizeSus)
+	{
+		size = sizeMin;
+	}
+	else
+	{
+		size = sizeSus;
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Obtener complemento a 1
 	// Se itera sobre cada digito del decimal, escribiendo en un nuevo "vector" el digito contrario (1 si es 0 o 0 si es 1)
-	for(r=m;r>=0;r--){
-		if(vecm[r]==0){
-			vecs[t]=1;
+	t=0;
+
+	for(r=0;r<size;r++)
+	{
+		if(vecs[r]==0){
+			vecc[t]=1;
 		}
 		else{
-			vecs[t]=0;
+			vecc[t]=0;
 		}
 		t++;
 	}
 	
-	// Salida de datos
-	printf("\nEl numero %d en binario es: ",num);
-	for(r=m;r>=0;r--){
+	gotoxy(16, 2); printf("A1");
+	gotoxy(10, 4); printf("---->");
+
+	for(r=size-1;r>=0;r--)
+	{
+		printf("%d", vecc[r]);
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Se suma el minuendo  con el complemento del sustraendo
+	
+	sizeR = sumaBin(&vecm[0],sizeMin,&vecc[0],sizeSus, &vecr[0]);
+	
+	// Se imprime la operación
+	
+	gotoxy(22+size, 4); printf("---->");
+	gotoxy(28+size, 2);
+	
+	for(r=size-1;r>=0;r--)
+	{
 		printf("%d", vecm[r]);
 	}
 	
-	printf("\nSu complemento a 1 es: ");
-	for(r=0;r<=m;r++){
+	gotoxy(27+size, 3);printf("+");
+	
+	
+	for(r=size-1;r>=0;r--)
+	{
+		
+		gotoxy(31+(-r)+size, 4); printf("%d", vecc[r]);
+		gotoxy(27+r+size, 5); printf("----");
+	}
+	
+	gotoxy(28+size, 6); 
+	
+	int x;
+	for(x=sizeR-1;x>=0;x--)
+	{
+		printf("%d", vecr[x]);
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Salida de datos relevantes para el usuario
+	
+	gotoxy(20, 18); printf("\nEl minuendo %d en binario es: ", min);
+	for(r=size-1;r>=0;r--){
+		printf("%d", vecm[r]);
+	}
+	
+	gotoxy(20, 20); printf("\nEl sustraendo %d en binario es: ", sus);
+	for(r=size-1;r>=0;r--){
 		printf("%d", vecs[r]);
 	}
 	
+	gotoxy(20, 22);	printf("\nEl complemento del sustraendo a 1 es: ");
+	for(r=size-1;r>=0;r--)
+	{
+		printf("%d", vecc[r]);
+	}
+
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	if(min>=sus)
+	{
+		// Si el minuendo es mayor al sustraendo
+		
+		int y;
+		for(y=1;y<8;y++)
+		{
+			gotoxy(55,y);printf("%c",186);
+			
+		}
+		
+		// Se elimina la unidad de orden superior y se suma 1 al numero obtenido
+		
+		sizeComprobacion= sumaBin(&vecr[0],sizeR,&vecUno[0],1, &vecTor[0]);
+		
+		// Se imprime la operación
+		
+		gotoxy(60, 2);	
+		for(r=sizeR-2;r>=0;r--){
+			printf("%d", vecr[r]);
+		}
+		
+		gotoxy(60, 3);printf("+");
+		gotoxy(60, 4);
+		
+		for(r=sizeR-2;r>=0;r--){
+			
+			 printf("%d", vecUno[r]);
+		}
+		gotoxy(59, 5); printf("----");
+		gotoxy(60, 6); 
+		
+		for(x=sizeComprobacion-3;x>=0;x--)
+		{
+			printf("%d", vecTor[x]);
+		}
+	}
+	else
+	{	
+		// Si el minuendo es menor al sustraendo
+		
+		if(dif<0)
+		{
+			dif=dif*(-1);
+		}
+		
+		// Se verifica si es necesario recomplementar y en caso tal, se recomplementa
+		
+		if(decimal(vecr,sizeR)==dif)
+		{
+			t=0;
+				for(r=0;r<sizeR;r++)
+				{
+					if(vecr[r]==0)
+					{
+						vecr[t]=1;
+					
+					}
+					else
+					{
+						vecc[t]=0;
+					}
+					
+				t++;
+				}
+		}
+		
+		// Se muestra el resultado final
+		
+		int y;
+		for(y=1;y<8;y++)
+		{
+			gotoxy(55,y);printf("%c",186);
+			
+		}
+		
+		gotoxy(60, 6); printf("-");
+		for(r=size-1;r>=0;r--)
+		{
+			printf("%d", vecc[r]);
+		}
+	
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 }
 
 // Metodo para calcular el complemento a 2
 void a2(){
+	
+	 
+	int sizeMin, sizeSus, sizeComp, sizeR, sizeComprobacion, size;
+	
 	// Captura de Datos
-	printf("Teclee el numero a complementar: ");
-	scanf("%d", &num);
-	m=0;
-	// Se obtienen las direcciones de memoria donde se almacenaran los valores binarios
-	vecm=(int*) calloc(1, sizeof(int));
-	// Se transforma el numereo introducido en binario
-	bin(num);
-	vecs = (int*) calloc((m+1), sizeof(int));
+	printf("Teclee la resta: ");
+	gotoxy(2, 4); printf("- ");
+	gotoxy(4, 2); scanf("%d", &min);
+	gotoxy(4, 4); scanf("%d", &sus);
+	gotoxy(2, 5); printf("--------");
+	dif=min-sus;
+	gotoxy(2, 6); printf("%d \n",dif );
+
+	vaciarVectores();
+		
+	// Se transforman los operandos en binario
+	sizeMin = bin(min, &vecm[0]);
+
+	sizeSus = bin(sus, &vecs[0]);
+	
+	if(sizeMin>=sizeSus)
+	{
+		size = sizeMin;
+	}
+	else
+	{
+		size = sizeSus;
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Obtener complemento a 1
+	// Se itera sobre cada digito del decimal, escribiendo en un nuevo "vector" el digito contrario (1 si es 0 o 0 si es 1)
 	t=0;
-	
-	
-	// Se "invierten" los digitos del binario
-	for(r=m;r>=0;r--){
-		if(vecm[r]==0){
-			vecs[r]=1;
+
+	for(r=0;r<size;r++)
+	{
+		if(vecs[r]==0){
+			vecc[t]=1;
 		}
 		else{
-			vecs[r]=0;
+			vecc[t]=0;
 		}
+		t++;
 	}
 	
-	// Se busca el valor en decimal del complemento
-	resul=0;
-	for(r=0;r<=m;r++){
-		if(vecs[r]==1){
-			resul=resul+pow(2,r);
-		}
+	gotoxy(16, 1); printf("A1");
+	gotoxy(10, 4); printf("---->");
+
+	for(r=size-1;r>=0;r--)
+	{
+		printf("%d", vecc[r]);
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Sumar 1 al complemento A1 (Calcular complemento A2)
+	
+	for(r=size-1;r>=0;r--)
+	{
+		gotoxy(34+(-r)+size, 2);printf("%d", vecc[r]);
 	}
 	
-	// Impresión del numero en binario
-	printf("\nEl numero %d en binario es: ",num);
-	for(r=m;r>=0;r--){
+	
+	sizeComp = sumaBin(&vecc[0],size,&vecUno[0],1, &vecc[0]);
+	
+	// Mostrar la  operación
+	
+	gotoxy(36, 1); printf("A2");
+	
+	
+	for(r=size-1;r>=0;r--)
+	{
+			
+		gotoxy(34+(-r)+size, 4); printf("%d", vecUno[r]);
+		gotoxy(32+(-r)+size, 5); printf("----");
+	}
+	gotoxy(29+size, 3);printf("+");
+	gotoxy(18+size, 4); printf("---->");
+	
+	for(r=size-1;r>=0;r--)
+	{
+		gotoxy(34+(-r)+size, 6);printf("%d", vecc[r]);
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Se suma el minuendo  con el complemento obtenido
+	
+	sizeR = sumaBin(&vecm[0],sizeMin,&vecc[0],sizeSus, &vecr[0]);
+	
+	// Se imprime la operación
+	
+	gotoxy(45+size, 4); printf("---->");
+	
+	
+	for(r=size-1;r>=0;r--)
+	{
+		gotoxy(60+(-r)+size, 2); printf("%d", vecm[r]);
+	}
+	
+	gotoxy(54+size, 3);printf("+");
+	
+	
+	for(r=size-1;r>=0;r--)
+	{
+		
+		gotoxy(60+(-r)+size, 4); printf("%d", vecc[r]);
+		gotoxy(54+r+size, 5); printf("----");
+	}
+	
+	gotoxy(56+size, 6); 
+	
+	int x;
+	for(x=sizeR-1;x>=0;x--)
+	{
+		printf("%d", vecr[x]);
+	}
+	
+
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Salida de datos relevantes para el usuario
+	
+	gotoxy(20, 18); printf("\nEl minuendo %d en binario es: ", min);
+	for(r=size-1;r>=0;r--){
 		printf("%d", vecm[r]);
 	}
-	// Se suma 1 al valor del complemento
-	resul=resul+1;
-	m=0;
 	
-	vecm=(int*) calloc(1, sizeof(int));
-	// Se regresa el complemento a binario
-	bin(resul);
-	vecs = (int*) calloc((m+1), sizeof(int));
-	t=0;
-	
-	// Impresión del complemento a 2 al final del proceso
-	printf("\nSu complemento a 2 es: ");
-	for(r=m;r>=0;r--){
-		printf("%d", vecm[r]);
+	gotoxy(20, 20); printf("\nEl sustraendo %d en binario es: ", sus);
+	for(r=size-1;r>=0;r--){
+		printf("%d", vecs[r]);
 	}
+	
+	gotoxy(20, 22);	printf("\nEl complemento del sustraendo a 2 es: ");
+	for(r=size-1;r>=0;r--)
+	{
+		printf("%d", vecc[r]);
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	if(min>=sus)
+	{
+		// Si el minuendo es mayor al sustraendo
+		
+		int y;
+		for(y=1;y<8;y++)
+		{
+			gotoxy(85,y);printf("%c",186);
+			
+		}
+		
+		// Se elimina la unidad de orden superior y se sustituye por un signo positivo
+		// Se imprime la operación
+		
+		gotoxy(87, 6);printf("+");	
+		for(r=sizeR-2;r>=0;r--)
+		{
+			printf("%d", vecr[r]);
+		}
+
+	}
+	else
+	{	
+		// Si el minuendo es menor al sustraendo
+		
+		if(dif<0)
+		{
+			dif=dif*(-1);
+		}
+		
+		// Se recomplementa el resultado obtenido
+			t=0;
+				for(r=0;r<sizeR;r++)
+				{
+					if(vecr[r]==0)
+					{
+						vecc[t]=1;
+					}
+					else
+					{
+						vecc[t]=0;
+					}	
+				t++;
+				}
+
+		// Se muestra el resultado final		
+		int y;
+		for(y=1;y<8;y++)
+		{
+			gotoxy(70,y);printf("%c",186);
+			
+		}
+		
+		for(r=size-1;r>=0;r--)
+		{
+			gotoxy(87+(-r)+size, 2);printf("%d", vecc[r]);
+		}
+		
+	
+		sizeComp = sumaBin(&vecc[0],size,&vecUno[0],1, &vecc[0]);
+		
+		gotoxy(89, 1); printf("A2");
+		
+		
+		for(r=size-1;r>=0;r--)
+		{
+				
+			gotoxy(87+(-r)+size, 4); printf("%d", vecUno[r]);
+			gotoxy(85+(-r)+size, 5); printf("----");
+		}
+		
+		gotoxy(81+size, 3);printf("+");
+		gotoxy(81+size, 6); printf("-");
+		
+		for(r=size-1;r>=0;r--)
+		{
+			gotoxy(87+(-r)+size, 6);printf("%d", vecc[r]);
+		}
+
+	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 // Metodo principal
@@ -288,6 +764,7 @@ int main(){
 	else{
 		exit(0);
 	}
+	
 	system("PAUSE");
 	return 0;
 }
